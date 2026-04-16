@@ -1,0 +1,150 @@
+
+function formatDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" });
+    return new Date(dateStr).toLocaleDateString("es-MX", { year: "numeric", month: "short", day: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
+
+function PostCard({ post, index }: { post: Post; index: number }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+    >
+      <a
+        href={post.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex flex-col md:flex-row gap-6 py-10 border-b border-white/10 hover:border-[#E94F37]/40 transition-all duration-300"
+      >
+        {/* Number */}
+        <span className="text-[#E94F37] text-xs font-bold tracking-widest shrink-0 w-6">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[#F5F5F5] font-bold text-xl md:text-2xl leading-tight mb-3 group-hover:text-[#E94F37] transition-colors duration-200">
+            {post.title}
+          </h3>
+          <p className="text-[#888888] leading-relaxed text-sm line-clamp-2">
+            {post.description}
+            {post.description && !post.description.endsWith("...") ? "..." : ""}
+          </p>
+        </div>
+
+        {/* Date + arrow */}
+        <div className="flex md:flex-col items-start md:items-end justify-between md:justify-start gap-4 shrink-0">
+          <span className="text-[#888888] text-xs uppercase tracking-widest">
+            {formatDate(post.pubDate)}
+          </span>
+          <span className="text-[#888888] group-hover:text-[#E94F37] transition-colors duration-200 text-lg">
+            →
+          </span>
+        </div>
+      </a>
+    </motion.div>
+  );
+}
+
+export default function BlogSectionClient({ posts }: { posts: Post[] }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section id="escritos" className="relative py-32 bg-[#0D0D0D]">
+      {/* Vertical label */}
+      <div className="absolute left-6 top-40 hidden lg:flex flex-col items-center gap-4">
+        <span className="vertical-text text-[#888888] text-[10px] uppercase tracking-[0.3em]">
+          Escritos
+        </span>
+        <span className="vertical-text text-[#888888] text-[10px] uppercase tracking-[0.3em]">Escritos</span>
+        <span className="block w-[1px] h-24 bg-white/10" />
+      </div>
+
+      <div className="max-w-[960px] mx-auto px-6 md:px-10">
+        {/* Header */}
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
+          <p className="text-[#E94F37] text-xs uppercase tracking-[0.35em] mb-6 font-medium">
+          <p className="text-[#3B7CF8] text-xs uppercase tracking-[0.35em] mb-6 font-medium">
+            04 — Escritos
+          </p>
+
+          <div className="relative">
+            <span className="section-number -top-10 -left-4" aria-hidden="true">
+              04
+            </span>
+            <span className="section-number -top-10 -left-4" aria-hidden="true">04</span>
+            <h2
+              className="font-black uppercase text-[#F5F5F5] leading-[0.9] tracking-tight relative z-10"
+              style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)" }}
+            >
+              Ideas en
+              Notas sobre IA,
+              <br />
+              <span className="text-[#E94F37]">texto</span>
+              <span className="text-[#3B7CF8]">sistemas y marketing.</span>
+            </h2>
+          </div>
+
+          <p className="text-[#888888] text-lg mt-8 max-w-lg leading-relaxed">
+            Escribo en Substack sobre la intersección de la inteligencia artificial, el marketing y
+            las ideas que merecen más de un hilo de Twitter.
+          </p>
+        </motion.div>
+
+        {/* Posts */}
+        <div>
+          {posts.map((p, i) => (
+            <PostCard key={p.link + i} post={p} index={i} />
+            <motion.a
+              key={p.link + i}
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              className="group flex items-center justify-between gap-6 py-6 border-b border-white/10 hover:border-[#3B7CF8]/40 transition-all duration-300"
+            >
+              <div className="flex items-center gap-6 min-w-0">
+                <span className="text-[#3B7CF8] text-xs font-bold tracking-widest shrink-0">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="text-[#F5F5F5] font-medium text-base leading-tight group-hover:text-[#3B7CF8] transition-colors duration-200 truncate">
+                  {p.title}
+                </h3>
+              </div>
+              <div className="flex items-center gap-4 shrink-0">
+                <span className="text-[#888888] text-xs hidden md:block font-mono">{formatDate(p.pubDate)}</span>
+                <span className="text-[#888888] group-hover:text-[#3B7CF8] transition-colors duration-200">→</span>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
